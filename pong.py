@@ -16,6 +16,11 @@ player2Y = 250
 paddleWidth = 30
 paddleHeight = 100
 
+ballX = 450
+ballY = 300
+ballDx = 4
+ballDy = 4
+
 running = True
 myClock = pygame.time.Clock()
 
@@ -25,7 +30,8 @@ while running:
             running = False
 
     p1Paddle = pygame.Rect(50, player1Y, paddleWidth, paddleHeight)
-    p2Paddle = pygame.Rect(850, player2Y, paddleWidth, paddleHeight)
+    p2Paddle = pygame.Rect(820, player2Y, paddleWidth, paddleHeight)
+    ball = pygame.Rect(ballX, ballY, 10, 10)
 
     keys = pygame.key.get_pressed()
     if (keys[pygame.K_z] and player1Y > 0):
@@ -38,11 +44,27 @@ while running:
     elif(keys[pygame.K_DOWN] and player2Y + paddleHeight < SCREENHEIGHT):
         player2Y += 5
      
+    ballX += ballDx
+    ballY += ballDy
+    if ball.colliderect(p1Paddle):
+        ballDx = abs(ballDx)
+    if ball.colliderect(p2Paddle):
+        ballDx = -abs(ballDx)
+    elif ballY <= 0:
+        ballDy = abs(ballDy)
+    elif ballY >= SCREENHEIGHT:
+        ballDy = -abs(ballDy)
+    elif ballX >= SCREENWIDTH or ballX <= 0:
+        ballX = 450
+        ballY = 300
+        player1Y1 = 250
+        player2Y2 = 250
 
     screen.fill(BGCOLOR)
 
     pygame.draw.rect(screen, BLUE, p1Paddle)
     pygame.draw.rect(screen, RED, p2Paddle)
+    pygame.draw.rect(screen, WHITE, ball)
 
     pygame.display.flip() 
     myClock.tick(60)
