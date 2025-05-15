@@ -16,7 +16,7 @@ RED = (230, 50, 100)
 
 player1Y = 250
 player2Y = 250
-paddleWidth = 30
+paddleWidth = 15
 paddleHeight = 100
 p1Points = 0
 p2Points = 0
@@ -26,6 +26,9 @@ ballY = 300
 ballDx = 4
 ballDy = 4
 
+# Hits
+hits = 0
+last_hit = None
 
 
 running = True
@@ -53,10 +56,38 @@ while running:
      
     ballX += ballDx
     ballY += ballDy
+
     if ball.colliderect(p1Paddle):
         ballDx = abs(ballDx)
     if ball.colliderect(p2Paddle):
         ballDx = -abs(ballDx)
+
+    # Hits
+    if ball.colliderect(p1Paddle) and last_hit != 'p1':
+        last_hit = 'p1'
+
+    elif ball.colliderect(p2Paddle) and last_hit == 'p1':
+        hits += 1
+        last_hit = 'p2'
+
+    if ballX <= 0 or ballX >= SCREENWIDTH:
+        last_hit = None
+
+
+    if hits % 5 == 0 and hits != 0:
+        if ballDx > 0:
+            ballDx += 1
+        else:
+            ballDx -= 1
+
+        if ballDy > 0:
+            ballDy += 1
+        else:
+            ballDy -= 1
+
+        hits = 0
+
+
     elif ballY <= 0:
         ballDy = abs(ballDy)
     elif ballY >= SCREENHEIGHT:
@@ -64,7 +95,7 @@ while running:
     elif ballX >= SCREENWIDTH or ballX <= 0:
         if ballX >= SCREENWIDTH:
             p1Points +=1
-        elif ballX <= SCREENWIDTH:
+        elif ballX <= 0:
             p2Points += 1
         ballX = 450
         ballY = 300
@@ -72,6 +103,9 @@ while running:
         player2Y2 = 250
 
     screen.fill(BGCOLOR)
+
+    hits_text = calibriBold35.render(f"Hits: {hits}", True, BLUE)
+    screen.blit(hits_text, (SCREENWIDTH // 2 - 40, 20))
 
     pygame.draw.rect(screen, BLUE, p1Paddle)
     pygame.draw.rect(screen, RED, p2Paddle)
